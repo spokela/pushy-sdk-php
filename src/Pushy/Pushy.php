@@ -43,25 +43,34 @@ class Pushy
      * @var string
      */
     protected $secret;
+    
+    /**
+     * Timeout for cURL requests (seconds)
+     * 
+     * @var integer
+     */
+    protected $timeout;
 
     /**
      * Constructor
      * 
-     * @param string $pushyUrl  Full URL to Pushy server (scheme://hostname:port)
-     * @param string $secretKey Pushy's server secret key
+     * @param string  $pushyUrl  Full URL to Pushy server (scheme://hostname:port)
+     * @param string  $secretKey Pushy's server secret key
+     * @param integer $timeout   Timeout (seconds)
      * 
-     * @throws \Exception if cURL isn't available
+     * @throws Exception if cURL isn't available
      * @return void
      */
-    public function __construct($pushyUrl, $secretKey)
+    public function __construct($pushyUrl, $secretKey, $timeout = 3)
     {
         // check cURL
         if (!extension_loaded('curl')) {
-            throw new \Exception("cURL extension is required to use pushy");
+            throw new Exception("cURL extension is required");
         }
 
         $this->url      = $pushyUrl;
         $this->secret   = $secretKey;
+        $this->timeout  = $timeout;
     }
 
     /**
@@ -104,7 +113,8 @@ class Pushy
      * @param string $event   The Event name
      * @param array  $data    Serializable data sent with the event
      * 
-     * @return void
+     * @throws Exception when an error occurs
+     * @return boolean true if event dispatched into an existing channel
      */
     public function trigger($channel, $event, $data = array())
     {
@@ -130,17 +140,40 @@ class Pushy
         
         $feed   = curl_init();
         curl_setopt_array($feed, array(
-            CURLOPT_POST => 1,
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_TIMEOUT => 4,
-            CURLOPT_POSTFIELDS => http_build_query($data)
+            CURLOPT_POST            => 1,
+            CURLOPT_URL             => $url,
+            CURLOPT_RETURNTRANSFER  => 1,
+            CURLOPT_TIMEOUT         => 4,
+            CURLOPT_POSTFIELDS      => http_build_query($data),
+            CURLOPT_TIMEOUT         => $this->timeout,
+            CURLOPT_USERAGENT       => 'Pushy-PHP/1.0 PHP/'. phpversion()
         )); 
         
         $json   = curl_exec($feed);
         curl_close($feed);
         
+        if ($json === false) {
+            throw new Exception("Unable to connect to remote server.");
+        }
+        
         $obj    = json_decode($json);
+        if (!is_object($obj) || !isset($obj->status) 
+            || !isset($obj->status->code)
+        ) {
+            throw new Exception("Invalid/bogus response recieved.");
+        } 
+        
+        $code = (int)$obj->status->code;
+        $msg = (isset($obj->status->message) ? 
+            $obj->status->message : 
+            "unknown error"
+        );
+        
+        if ($code !== 200 && $code !== 201) {
+            throw new Exception(sprintf('%s [code: %u]', $msg, $code));
+        }
+        
+        return ($code === 201 ? true : false);
     }
     
     /**
