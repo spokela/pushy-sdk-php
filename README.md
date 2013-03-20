@@ -7,7 +7,9 @@ This is the SDK to use in your application to trigger events from server-side.
 
 Add a require clause ```spokela/pushy-sdk-php``` into your ```composer.json``` file to get started.
 
-Now you can instanciate the ```Pushy\Pushy``` object and enjoy your realtime web app!
+## Usage
+
+Just instanciate the ```Pushy\Pushy``` object and enjoy your realtime web app!
 
 ```php
 use Pushy\Pushy;
@@ -15,7 +17,7 @@ use Pushy\Pushy;
 $pushy = new Pushy("http://localhost:8234", $secretKey = "secretKey", $timeout = 3);
 ```
 
-## Trigger events
+### Trigger events
 
 Triggering events is pretty straightforward:
 
