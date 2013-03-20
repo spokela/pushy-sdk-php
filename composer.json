@@ -1,12 +1,11 @@
 {
     "name": "spokela/pushy-sdk-php",
-    "description": "Publish/Subscribe system for realtime webapps (PHP SDK)",
+    "description": "Publish-Subscribe system for realtime webapps (PHP SDK)",
     "type": "library",
     "keywords": [
         "realtime",
         "sdk",
         "library",
-        "pub/sub",
         "publish",
         "subscribe",
         "events"
