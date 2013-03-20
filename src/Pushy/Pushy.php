@@ -172,7 +172,8 @@ class Pushy
      * 
      * @return string
      */
-    public function getSecret() {
+    public function getSecret()
+    {
         return $this->secret;
     }
 

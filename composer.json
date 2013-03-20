@@ -1,0 +1,30 @@
+{
+    "name": "spokela/pushy-sdk-php",
+    "description": "Publish/Subscribe system for realtime webapps (PHP SDK)",
+    "type": "library",
+    "keywords": [
+        "realtime",
+        "sdk",
+        "library",
+        "pub/sub",
+        "publish",
+        "subscribe",
+        "events"
+    ],
+    "authors": [
+        {
+            "name": "Julien",
+            "email": "julien@nitronet.org"
+        }
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3",
+        "ext-curl": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Pushy": "src/"
+        }
+    }
+}
